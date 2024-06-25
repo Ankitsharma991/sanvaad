@@ -34,6 +34,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "fast-starling-200.convex.cloud",
       },
+      {
+        protocol: "https",
+        hostname: "dashboard.clerk.com",
+      },
     ],
   },
 };

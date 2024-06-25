@@ -1,5 +1,6 @@
 import { action } from "./_generated/server";
 import { v } from "convex/values";
+
 import OpenAI from "openai";
 import { SpeechCreateParams } from "openai/resources/audio/speech.mjs";
 
@@ -15,7 +16,9 @@ export const generateAudioAction = action({
       voice: voice as SpeechCreateParams["voice"],
       input,
     });
+
     const buffer = await mp3.arrayBuffer();
+
     return buffer;
   },
 });
@@ -30,8 +33,13 @@ export const generateThumbnailAction = action({
       quality: "standard",
       n: 1,
     });
+
     const url = response.data[0].url;
-    if (!url) throw new Error("Error generating thumbnail");
+
+    if (!url) {
+      throw new Error("Error generating thumbnail");
+    }
+
     const imageResponse = await fetch(url);
     const buffer = await imageResponse.arrayBuffer();
     return buffer;
