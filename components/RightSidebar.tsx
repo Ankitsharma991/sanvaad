@@ -19,6 +19,7 @@ const RightSidebar = () => {
   const router = useRouter();
 
   const { audio } = useAudio();
+  console.log("userDetails", user?.id)
 
   return (
     <section className={cn('right_sidebar h-[calc(100vh-5px)]', {

@@ -1,32 +1,36 @@
-'use client'
+'use client';
 
-import EmptyState from '@/components/EmptyState'
-import LoaderSpinner from '@/components/LoaderSpinner'
-import PodcastCard from '@/components/PodcastCard'
-import PodcastDetailPlayer from '@/components/PodcastDetailPlayer'
-import { api } from '@/convex/_generated/api'
-import { Id } from '@/convex/_generated/dataModel'
-import { useUser } from '@clerk/nextjs'
-import { useQuery } from 'convex/react'
-import Image from 'next/image'
-import React from 'react'
+import EmptyState from '@/components/EmptyState';
+import LoaderSpinner from '@/components/LoaderSpinner';
+import PodcastCard from '@/components/PodcastCard';
+import PodcastDetailPlayer from '@/components/PodcastDetailPlayer';
+import { api } from '@/convex/_generated/api';
+import { Id } from '@/convex/_generated/dataModel';
+import { useUser } from '@clerk/nextjs';
+import { useQuery } from 'convex/react';
+import Image from 'next/image';
+import React from 'react';
 
 const PodcastDetails = ({ params: { podcastId } }: { params: { podcastId: Id<'podcasts'> } }) => {
   const { user } = useUser();
 
-  const podcast = useQuery(api.podcasts.getPodcastById, { podcastId })
-
-  const similarPodcasts = useQuery(api.podcasts.getPodcastByVoiceType, { podcastId })
+  const podcast = useQuery(api.podcasts.getPodcastById, { podcastId });
+  const similarPodcasts = useQuery(api.podcasts.getPodcastByVoiceType, { podcastId });
 
   const isOwner = user?.id === podcast?.authorId;
 
-  if (!similarPodcasts || !podcast) return <LoaderSpinner />
+  if (!similarPodcasts || !podcast) return <LoaderSpinner />;
+
+  // Ensure all required properties are defined
+  if (!podcast.imageStorageId || !podcast.audioStorageId || !podcast.imageUrl || !podcast.audioUrl || !podcast.podcastTitle || !podcast.author || !podcast.authorImageUrl || !podcast.authorId) {
+    return <p>Error: Missing required podcast details.</p>;
+  }
 
   return (
     <section className="flex w-full flex-col">
       <header className="mt-9 flex items-center justify-between">
         <h1 className="text-20 font-bold text-white-1">
-          Currenty Playing
+          Currently Playing
         </h1>
         <figure className="flex gap-3">
           <Image
@@ -42,7 +46,14 @@ const PodcastDetails = ({ params: { podcastId } }: { params: { podcastId: Id<'po
       <PodcastDetailPlayer
         isOwner={isOwner}
         podcastId={podcast._id}
-        {...podcast}
+        imageStorageId={podcast.imageStorageId}
+        audioStorageId={podcast.audioStorageId}
+        audioUrl={podcast.audioUrl}
+        podcastTitle={podcast.podcastTitle}
+        author={podcast.author}
+        imageUrl={podcast.imageUrl}
+        authorImageUrl={podcast.authorImageUrl}
+        authorId={podcast.authorId}
       />
 
       <p className="text-white-2 text-16 pb-8 pt-[45px] font-medium max-md:text-center">{podcast?.podcastDescription}</p>
@@ -82,9 +93,8 @@ const PodcastDetails = ({ params: { podcastId } }: { params: { podcastId: Id<'po
           </>
         )}
       </section>
-
     </section>
-  )
+  );
 }
 
-export default PodcastDetails
+export default PodcastDetails;
